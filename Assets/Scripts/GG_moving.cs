@@ -6,21 +6,41 @@ public class GG_moving : MonoBehaviour
 {
     public float moveingSpeed = 10f;
     public float jumpForce = 5f;
+    public int maxHealth = 5;
+    public float timeInvisible = 1.0f;
 
-    private bool faceToRight = true;
+
+    private bool faceToRight = true; // нахуя здесь Private?
+   
     float horizontalSpeed;
+    float invisibleTimer;
     bool isGround = true;
+    bool isInvisible = false;
+    public int currentHealth { get; private set;}
 
     Rigidbody2D rigidBody;
 
     void Start()
     {
         rigidBody = GetComponent<Rigidbody2D>();
+        currentHealth = maxHealth;
     }
 
     void Update() // 1 time per frame
     {
         horizontalSpeed = Input.GetAxis("Horizontal"); // where directed speed of GG
+
+        if (isInvisible)
+        {
+            if (invisibleTimer > 0)
+            {
+                invisibleTimer -= Time.deltaTime;
+            }
+            else
+            {
+                isInvisible = false;
+            }
+        }
 
         Jump();
     }
@@ -71,4 +91,18 @@ public class GG_moving : MonoBehaviour
             isGround = true;
         }
     }
+
+    public void ChangeHealth(int amount)
+    {
+        if (amount < 0)
+        {
+            if (isInvisible) return;
+
+            isInvisible = true;
+            invisibleTimer = timeInvisible;
+        }
+        currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
+        Debug.Log(currentHealth + "/" + maxHealth);
+    }
+
 }
